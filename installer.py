@@ -37,6 +37,8 @@ def display(stage, t1, t2, t3, *args):
     :type t3: str
     :param args: 
     """
+    os.system('cls')
+    t3 = t3.center(17)
     print Fore.LIGHTGREEN_EX + SCREEN.format(stage=stage, t1=t1, t2=t2, t3=t3),
     print os.linesep.join(map(str, args))
 
@@ -50,8 +52,12 @@ def is_valid_os():
 
 if __name__ == '__main__':
     ctypes.windll.kernel32.SetConsoleTitleA(INSTALLER_TITLE)
-
     init(autoreset=True)
+
+    stage = 1
+    display(1, '', '', '')
+
+    raw_input()
 
     display(1, 'ori', 'levi', 'foo', 1, 2, 3)
 
