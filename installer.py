@@ -1,7 +1,10 @@
 import os
+import argparse
 import ctypes
 
 from colorama import init, Fore
+
+stage = -1
 
 INSTALLER_VERSION = '1.0'
 INSTALLER_TITLE = 'Gvahim Package Installer - v{}'.format(INSTALLER_VERSION)
@@ -24,11 +27,9 @@ SCREEN = """
 """
 
 
-def display(stage, t1, t2, t3, *args):
+def display(t1, t2, t3, *args):
     """
     display screen
-    :param stage: the stage number
-    :type stage: int
     :param t1: title1
     :type t1: str
     :param t2: title2
@@ -51,15 +52,22 @@ def is_valid_os():
     raise NotImplementedError()
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('stage', type=int)
+
+    args = parser.parse_args()
+
+    stage = args.stage
+
     ctypes.windll.kernel32.SetConsoleTitleA(INSTALLER_TITLE)
     init(autoreset=True)
 
     stage = 1
-    display(1, '', '', '')
+    display('', '', '')
 
     raw_input()
 
-    display(1, 'ori', 'levi', 'foo', 1, 2, 3)
+    display('ori', 'levi', 'foo', 1, 2, 3)
 
     raw_input()
 
