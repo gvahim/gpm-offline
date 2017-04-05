@@ -51,8 +51,8 @@
     net session >nul 2>&1
 
 :pythonTakeOver
-    set ret=python installation\installer.py %sstage%
-    set /a sstage+=%ret%
+    python installation\installer.py %sstage%
+    set /a sstage+=%errorlevel%
 
 :cleanup
     set /a sstage+=1
