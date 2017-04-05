@@ -1,21 +1,30 @@
-import argparse
 import ctypes
-import installer.display
+import argparse
 
-from colorama import init, Fore
+from colorama import init
+from installer.steps import *
+from installer.display import display
 
 INSTALLER_VERSION = '1.0'
 INSTALLER_TITLE = 'Gvahim Package Installer - v{}'.format(INSTALLER_VERSION)
 
+STEPS = (
+    ('Visual C++ Compiler for Python', install_vcpy27),
+    ('Python Packages', install_python_packages),
+    ('PyCharm', install_pycharm),
+    ('WinPcap', install_winpcap),
+    ('WireShark', install_wireshark),
+    ('Install Tests', test_everything_is_good)
+)
 
-def is_valid_os():
-    """
-    :return: if os version is windows 7 and above
-    :rtype: bool
-    """
-    raise NotImplementedError()
+
+def init_display():
+    ctypes.windll.kernel32.SetConsoleTitleA(INSTALLER_TITLE)
+    init(autoreset=True)
 
 if __name__ == '__main__':
+    init_display()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('stage', type=int)
 
@@ -23,19 +32,9 @@ if __name__ == '__main__':
 
     stage = args.stage
 
-    ctypes.windll.kernel32.SetConsoleTitleA(INSTALLER_TITLE)
-    init(autoreset=True)
+    for i, (step_title, step_func) in enumerate(STEPS, 1):
+        display(stage + i, 'Install {}'.format(step_title), "installing...", "info")
+        step_func()
 
-    stage = 1
-    installer.display.display(0, '', '', 'info')
-
-    raw_input()
-
-    installer.display.display(1, 'ori', 'levi', 'error', 1, 2, 3)
-
-    raw_input()
-
-    for k, v in Fore.__dict__.iteritems():
-        print '{}: {}ori'.format(k, v)
-
+    stage += len(STEPS)
     exit(stage)
