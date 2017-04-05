@@ -29,6 +29,18 @@
 		goto:eof
     )
 
+:removeOldInstall
+    set /a sstage+=1
+    call:Display "Uinstall old gvahim installation" "Uninstalling..." "[i] INFO" %sstage%
+    "C:\Heights\PortableApps\InitialSetup\untested_uninstall.bat"
+    rmdir /S /Q "C:\Heights\PortableApps\"
+    del "C:\Heights\Start.exe"
+    if exist "C:\Heights\first.bat" (
+        del "C:\Heights\first.*"
+    )
+    echo Delete Heights folder, keep Documents folder (C:\Heights\Documents)
+    net session >nul 2>&1
+
 :pythonInstall
     set /a sstage+=1
     call:Display "Installing Python" "installing..." "[i] INFO" %sstage%
