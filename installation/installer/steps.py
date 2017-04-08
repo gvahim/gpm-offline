@@ -1,51 +1,64 @@
 import os
 import pip
 import shutil
+import _winreg
+import importlib
 import subprocess
-from utils import create_shortcut, is_64bit_machine, install_notifier
+from colorama import Fore
+from utils import create_shortcut, is_64bit_machine, install_notifier, heights_path, fix_width, DESKTOP_DIR
 
 INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation')
 PYTHON_INSTALLATION_DIR = os.path.join(INSTALLATION_DIR, 'python')
 NETWORKS_INSTALLATION_DIR = os.path.join(INSTALLATION_DIR, 'networks')
 
 
-# def uninstall_heights():
-#     dirs = filter(lambda a: 'heights' == a.lower(), os.listdir('c:\\'))
-#     if len(dirs) == 1:
-#         path = r'c:\{}'.format(dirs[0])
-#
-#         with open('answes.txt', 'w') as f:
-#
-#
-#         files = os.listdir(path)
-#         if 'first.bat' not in files:
-#             subprocess.call()
-#
-#         shutil.rmtree(path)
-#
-#
-#     # :removeOldInstall
-#     # set / a
-#     # sstage += 1
-#     # call:Display
-#     # "Uinstall old gvahim installation" "Uninstalling..." "[i] INFO" % sstage %
-#     # "C:\Heights\PortableApps\InitialSetup\untested_uninstall.bat"
-#     # rmdir / S / Q
-#     # "C:\Heights\PortableApps\"
-#     # del "C:\Heights\Start.exe"
-#     # if exist "C:\Heights\first.bat" (
-#     # del "C:\Heights\first.*"
-#     # )
-#     # echo
-#     # Delete
-#     # Heights
-#     # folder, keep
-#     # Documents
-#     # folder(C:\Heights\Documents)
-#     # net
-#     # session > nul
-#     # 2 > & 1
-#     raise NotImplementedError()
+def uninstall_heights():
+
+    path = heights_path()
+    if not path:
+        print '[i] Cannot detect old heights installation...'
+    else:
+        print '[i] Find old heigth installation, trying to uninstall it.'
+        print 'Delete Heights Installation:'
+
+        deletes = (
+            (shutil.rmtree, 'PortableApps Directory', 'PortableApps'),
+            (os.remove, 'Start.exe', 'Start.exe'),
+            (os.remove, 'first.bat', 'first.bat'),
+            (os.remove, 'first.vbs', 'first.vbs'),
+        )
+
+        for func, (msg, file_) in deletes:
+            del_path = os.path.join(path, file_)
+            if os.path.exists(del_path):
+                print '\t[*]{}'.format(fix_width(msg)),
+                func(del_path)
+                print '{}[D O N E}'.format(Fore.LIGHTMAGENTA_EX)
+
+        # remove shortcuts
+        shortcuts = filter(lambda a: a.endswith('Heights.lnk') or a.endswith('Heights-PyCharm.lnk'),
+                           os.listdir(DESKTOP_DIR))
+        for shortcut in shortcuts:
+            shortcut_path = os.path.join(DESKTOP_DIR, shortcut)
+            if os.path.exists(shortcut_path):
+                os.remove(shortcut_path)
+
+        # remove registry keys
+        keys = (
+            (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Classes\Python.File\\'),
+            (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Classes\Pythonw.File\\'),
+            (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Classes\wireshark-capture-file\\'),
+            (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Wow6432Node\Python\PythonCore\2.7\\'),
+
+            (_winreg.HKEY_CLASSES_ROOT, r'Pythonw.File\shell\Open with Heights Pycharm'),
+            (_winreg.HKEY_CLASSES_ROOT, r'Python.File\shell\Open with Heights Pycharm'),
+            (_winreg.HKEY_CLASSES_ROOT, r'Pythonw.File\shell\Open with Heights IDLE'),
+            (_winreg.HKEY_CLASSES_ROOT, r'Python.File\shell\Open with Heights IDLE'),
+            (_winreg.HKEY_CLASSES_ROOT, r'Pythonw.File\shell\Open with Heights Notepad++'),
+            (_winreg.HKEY_CLASSES_ROOT, r'Python.File\shell\Open with Heights Notepad++'),
+        )
+        for key, sub_key in keys:
+            _winreg.DeleteKey(key, sub_key)
 
 
 def install_pycharm():
@@ -124,9 +137,42 @@ def install_wireshark():
 
 
 def test_everything_is_good():
-    raise NotImplementedError()
+    # test for:
+    #   [*] python
+    #   [*] python libraries
+    #   [*] networks libraries
+    #   [] pycharm
+    #   [] wireshark
+
+    print 'Testing the installation:'
+    print '\t[*] {}'.format(fix_width('Python install {}successfully'.format(Fore.GREEN)))
+
+    libraries_paths = (
+        os.path.join(PYTHON_INSTALLATION_DIR, 'python.packages'),
+        os.path.join(NETWORKS_INSTALLATION_DIR, 'networks.packages')
+    )
+
+    for libraries_path in libraries_paths:
+        with open(libraries_path) as file_:
+            for library in file_:
+                if library.startswith('#'):
+                    continue
+
+                library = library.split()
+                try:
+                    importlib.import_module(library)
+                    msg = '{}successfully'.format(Fore.GREEN)
+                except ImportError:
+                    msg = '{}failed'.format(Fore.RED)
+
+                print '\t[*] {}'.format(fix_width('Python {} package install {}'.format(library, msg)))
+
+    print '{}YAY everything is install! have fun'.format(Fore.LIGHTRED_EX)
+    raw_input('Press any key to continue...')
 
 
 if __name__ == '__main__':
-    print PYTHON_INSTALLATION_DIR
-    install_networks_packages()
+    # print PYTHON_INSTALLATION_DIR
+    # install_networks_packages()
+    # test_everything_is_good()
+    importlib.import_module('ori')

@@ -1,6 +1,6 @@
+import time
 import ctypes
 import argparse
-
 from colorama import init
 from installer.steps import *
 from installer.display import display
@@ -9,14 +9,13 @@ INSTALLER_VERSION = '1.0'
 INSTALLER_TITLE = 'Gvahim Package Installer - v{}'.format(INSTALLER_VERSION)
 
 STEPS = (
-    # ('Uninstall Old Heights Installation', 'Uninstalling...', uninstall_heights),
+    ('Uninstall Old Heights Installation', 'Uninstalling...', uninstall_heights),
     ('Install Visual C++ Compiler for Python', 'Ininstalling...', install_vcpy27),
     ('Install Python Packages', 'Ininstalling...', install_python_packages),
     ('Install PyCharm', 'Ininstalling...', install_pycharm),
     ('Install WinPcap', 'Ininstalling...', install_winpcap),
     ('Install WireShark', 'Ininstalling...', install_wireshark),
     ('Install Networks Packages', 'Ininstalling...', install_networks_packages),
-    # ('Set the environment path', '', setting_path),
     ('Install Tests', 'Testing...', test_everything_is_good)
 )
 
@@ -38,6 +37,7 @@ if __name__ == '__main__':
     for i, (step_title, step_subtitle, step_func) in enumerate(STEPS, 1):
         display(stage + i, step_title, step_subtitle, "info")
         step_func()
+        time.sleep(2)
 
     stage += len(STEPS)
     exit(stage)

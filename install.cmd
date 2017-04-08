@@ -4,6 +4,7 @@
 
 set PYTHON_DIR=%cd%\python27
 set INSTALLATION_DIR=%cd%\installation
+set WIRESHARK_DIR=%cd%\wireshark
 
 :InitState
 	cls
@@ -26,8 +27,7 @@ set INSTALLATION_DIR=%cd%\installation
     msiexec /i "%INSTALLATION_DIR%\python\python-2.7.13.msi" /quiet /passive TARGETDIR=%PYTHON_DIR%
     echo installing python - D O N E
     <nul set /p ".=Adding python to path		"
-    setx PATH "%PATH%;%PYTHON_DIR%;%PYTHON_DIR%\Scripts;"
-    set PATH=%PATH%;%PYTHON_DIR%;%PYTHON_DIR%\Scripts;
+    setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" >nul
     echo [D O N E]
 
     echo installing libraries
@@ -39,6 +39,11 @@ set INSTALLATION_DIR=%cd%\installation
 :pythonTakeOver
     "%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
     set /a sstage+=%errorlevel%
+
+:wiresharkPath
+    set /a sstage+=1
+    call:Display "Setting Wireshark Path" "setting..." "[i] INFO" %sstage%
+    setx WIRESHARKPATH "%WIRESHARK_DIR%" >nul
 
 :cleanup
     set /a sstage+=1
