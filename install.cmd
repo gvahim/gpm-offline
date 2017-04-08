@@ -2,6 +2,9 @@
 @cd /d "%~dp0"
 @echo off
 
+set PYTHON_DIR=%cd%\python27
+set INSTALLATION_DIR=%cd%\installation
+
 :InitState
 	cls
 	Title Gvahim Package Installer - v1.0 & Color 0A
@@ -23,6 +26,8 @@
     msiexec /i "%INSTALLATION_DIR%\python\python-2.7.13.msi" /quiet /passive TARGETDIR=%PYTHON_DIR% ADDLOCAL=ALL
     echo installing python - D O N E
     echo adding python to path successfull
+    echo installing libraries
+    "%PYTHON_DIR%\python.exe" -m pip install winshell colorama
     echo python installer take over
     net session >nul 2>&1
 

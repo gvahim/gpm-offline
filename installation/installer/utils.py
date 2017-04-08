@@ -1,5 +1,8 @@
 import os
 import winshell
+import platform
+from contextlib import contextmanager
+from colorama import Fore
 
 
 def create_shortcut(shortcut_name, path, description=None):
@@ -18,6 +21,23 @@ def is_valid_os():
     :rtype: bool
     """
     raise NotImplementedError()
+
+
+def is_64bit_machine():
+    """    
+    :return: return true if the machine is 64bit otherwise return false.
+    :rtype: bool
+    """
+    return platform.machine().endswith('64')
+
+
+@contextmanager
+def install_notifier(name):
+    print '[i] installing {}...'.format(name),
+
+    yield
+
+    print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
 
 
 if __name__ == '__main__':
