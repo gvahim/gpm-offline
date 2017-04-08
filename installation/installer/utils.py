@@ -9,9 +9,11 @@ DESKTOP_DIR = os.path.join(os.path.expanduser('~'), 'Desktop')
 
 
 def create_shortcut(shortcut_name, path):
-    print '[i] Creating shortcut for {}'.format(shortcut_name),
+    msg = '[i] Creating shortcut for {}'.format(shortcut_name)
+    print '{:65}'.format(msg),
     cmd = '{} /A:C /F:{}\\{}.lnk /T:{}'.format(SHORTCUT, DESKTOP_DIR, shortcut_name, path)
-    subprocess.call(cmd.split())
+    with open(os.devnull, 'w') as fnull:
+        subprocess.call(cmd.split(), stdout=fnull)
     print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
 
 
@@ -33,12 +35,12 @@ def is_64bit_machine():
 
 @contextmanager
 def install_notifier(name):
-    print '[i] installing {}...'.format(name),
-
+    msg = '[i] installing {}...'.format(name)
+    print '{:65}'.format(msg),
     yield
-
     print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
 
 
 if __name__ == '__main__':
+    print SHORTCUT
     create_shortcut('ori', 'c:\python27\python.exe')

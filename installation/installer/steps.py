@@ -2,7 +2,6 @@ import os
 import pip
 import shutil
 import subprocess
-from colorama import Fore
 from utils import create_shortcut, is_64bit_machine, install_notifier
 
 INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation')
@@ -80,24 +79,29 @@ def install_vcpy27():
         subprocess.call(cmd.split())
 
 
+def install_with_pip(packages_file, cache_dir, notifier_title):
+    with open(packages_file) as f:
+        for package in f:
+            if package.startswith('#'):
+                continue
+            package = package.strip()
+            cmd = 'install --find-links={} --no-index -q {}'.format(cache_dir, package)
+            with install_notifier('{} - {}'.format(notifier_title, package)):
+                pip.main(cmd.split())
+
+
 def install_python_packages():
     packages_file = os.path.join(PYTHON_INSTALLATION_DIR, 'python.packages')
     cache_dir = os.path.join(PYTHON_INSTALLATION_DIR, 'cache')
-    with open(packages_file) as f:
-        for package in f:
-            cmd = '--find-links={} --no-index -q {}'.format(cache_dir, package)
-            with install_notifier('Python Package - {}'.format(package)):
-                pip.main(cmd.split())
+
+    install_with_pip(packages_file, cache_dir, 'Python Package')
 
 
 def install_networks_packages():
     packages_file = os.path.join(NETWORKS_INSTALLATION_DIR, 'networks.packages')
     cache_dir = os.path.join(NETWORKS_INSTALLATION_DIR, 'cache')
-    with open(packages_file) as f:
-        for package in f:
-            cmd = '--find-links={} --no-index -q {}'.format(cache_dir, package)
-            with install_notifier('Python Package for Networks - {}'.format(package)):
-                pip.main(cmd.split())
+
+    install_with_pip(packages_file, cache_dir, 'Python Package for Networks')
 
 
 def install_winpcap():
@@ -121,3 +125,8 @@ def install_wireshark():
 
 def test_everything_is_good():
     raise NotImplementedError()
+
+
+if __name__ == '__main__':
+    print PYTHON_INSTALLATION_DIR
+    install_networks_packages()
