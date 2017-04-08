@@ -70,9 +70,7 @@ def install_pycharm():
 
     exe_name = '{}.exe'.format(exe_name)
     exe_path = os.path.join(installation_path, 'bin', exe_name)
-    print '[i] Creating shortcut for PyCharm',
     create_shortcut('PyCharm', exe_path)
-    print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
 
 
 def install_vcpy27():
@@ -118,9 +116,7 @@ def install_wireshark():
         subprocess.call(cmd.split())
 
     exe_path = os.path.join(installation_path, 'Wireshark.exe')
-    print '[i] Creating shortcut for Wireshark',
     create_shortcut('Wireshark', exe_path)
-    print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
 
 
 def test_everything_is_good():

@@ -23,16 +23,21 @@ set INSTALLATION_DIR=%cd%\installation
 :pythonInstall
     set /a sstage+=1
     call:Display "Installing Python" "installing..." "[i] INFO" %sstage%
-    msiexec /i "%INSTALLATION_DIR%\python\python-2.7.13.msi" /quiet /passive TARGETDIR=%PYTHON_DIR% ADDLOCAL=ALL
+    msiexec /i "%INSTALLATION_DIR%\python\python-2.7.13.msi" /quiet /passive TARGETDIR=%PYTHON_DIR%
     echo installing python - D O N E
-    echo adding python to path successfull
+    <nul set /p ".=Adding python to path		"
+    setx PATH "%PATH%;%PYTHON_DIR%;%PYTHON_DIR%\Scripts;"
+    set PATH=%PATH%;%PYTHON_DIR%;%PYTHON_DIR%\Scripts;
+    echo [D O N E]
+
     echo installing libraries
-    "%PYTHON_DIR%\python.exe" -m pip install winshell colorama
+    "%PYTHON_DIR%\python.exe" -m pip install colorama
+
     echo python installer take over
     net session >nul 2>&1
 
 :pythonTakeOver
-    python installation\installer.py %sstage%
+    "%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
     set /a sstage+=%errorlevel%
 
 :cleanup

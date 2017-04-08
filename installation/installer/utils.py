@@ -1,18 +1,18 @@
 import os
-import winshell
 import platform
+import subprocess
 from contextlib import contextmanager
 from colorama import Fore
 
+SHORTCUT = INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation', 'Shortcut.exe')
+DESKTOP_DIR = os.path.join(os.path.expanduser('~'), 'Desktop')
 
-def create_shortcut(shortcut_name, path, description=None):
 
-    shortcut_name = '{}.lnk'.format(shortcut_name)
-    link_file_path = os.path.join(winshell.desktop(), shortcut_name)
-    with winshell.shortcut(link_file_path) as link:
-        link.path = path
-        if description:
-            link.description = description
+def create_shortcut(shortcut_name, path):
+    print '[i] Creating shortcut for {}'.format(shortcut_name),
+    cmd = '{} /A:C /F:{}\\{}.lnk /T:{}'.format(SHORTCUT, DESKTOP_DIR, shortcut_name, path)
+    subprocess.call(cmd.split())
+    print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
 
 
 def is_valid_os():
