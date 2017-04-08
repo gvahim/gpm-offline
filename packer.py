@@ -1,8 +1,8 @@
 import os
+import pip
+import shutil
 import urllib
 import argparse
-import pip
-import subprocess
 from colorama import init, Fore
 from contextlib import contextmanager
 from hurry.filesize import size, alternative
@@ -14,8 +14,8 @@ WINRAR = r'C:\Program Files (x86)\WinRAR\rar.exe'
 
 PACKAGES = {
     'packages': ['colorama'],
-    'requirements': [os.path.join('..', 'python', 'python.packages'),
-                     os.path.join('..', 'networks', 'networks.packages')]
+    'requirements': [os.path.join('..', 'python.packages'),
+                     os.path.join('..', 'networks.packages')]
 }
 
 GENERAL_SOFTWARES = {
@@ -26,7 +26,6 @@ GENERAL_SOFTWARES = {
 
 SOFTWARES_32BIT = {
     'Wireshark32': 'https://1.as.dl.wireshark.org/win32/Wireshark-win32-2.2.5.exe',
-    'JRE32': 'http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jre-8u121-windows-i586.exe',
     'Python32': 'https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi',
 }
 
@@ -70,7 +69,7 @@ def download_file(name, url):
         print '\r\t{file_name} ({size}) [{equal}>{space}] {percent}%'.format(percent=percent, equal='='*equal,
                                                                              space=' ' * (70 - equal),
                                                                              size=size(total_size, alternative),
-                                                                             file_name=name)
+                                                                             file_name=name),
 
     print 'Downloading {} from {}...'.format(name, url)
     head, tail = os.path.split(url)
@@ -84,8 +83,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--is64bit', action='store_true')
 
+    for directory in (CACHE_DIR, SOFTWARES_DIR):
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+        os.mkdir(directory)
+
     args = parser.parse_args()
-    print args
 
     with change_directory(CACHE_DIR):
         for package in PACKAGES['packages']:
@@ -108,7 +111,3 @@ if __name__ == '__main__':
     for software in softwares:
         for name_, url_ in software.iteritems():
             download_file(name_, url_)
-
-    # # pack to sfx archive
-    # cmd = '{} a -r -sfx -z"xfs.conf" auto_install install_me.exe'.format(WINRAR)
-    # subprocess.call(cmd.split())

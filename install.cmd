@@ -31,7 +31,7 @@ set WIRESHARK_DIR=%cd%\wireshark
     echo [D O N E]
 
     echo installing libraries
-    "%PYTHON_DIR%\python.exe" -m pip install colorama
+    "%PYTHON_DIR%\python.exe" -m pip install --find-links=%INSTALLATION_DIR%\cache --no-index -q colorama
 
     echo python installer take over
     net session >nul 2>&1

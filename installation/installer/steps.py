@@ -8,8 +8,8 @@ from colorama import Fore
 from utils import create_shortcut, is_64bit_machine, install_notifier, heights_path, fix_width, DESKTOP_DIR
 
 INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation')
-PYTHON_INSTALLATION_DIR = os.path.join(INSTALLATION_DIR, 'python')
-NETWORKS_INSTALLATION_DIR = os.path.join(INSTALLATION_DIR, 'networks')
+SOFTWARES_DIR = os.path.join(INSTALLATION_DIR, 'softwares')
+CACHE_DIRECTORY = os.path.join(INSTALLATION_DIR, 'cache')
 
 
 def uninstall_heights():
@@ -63,7 +63,7 @@ def uninstall_heights():
 
 def install_pycharm():
     installation_path = os.path.join(os.getcwd(), 'pycharm')
-    cmd = '{} /S /D={}'.format(os.path.join(PYTHON_INSTALLATION_DIR, 'pycharm-community-2017.1.exe'),
+    cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'pycharm-community-2017.1.exe'),
                                installation_path)
 
     with install_notifier('PyCharm 2017.1'):
@@ -76,7 +76,7 @@ def install_pycharm():
         print 'Detecting 32bit system...'
         print 'Need to install Java jre...'
 
-        cmd = '{} /s' .format(os.path.join(PYTHON_INSTALLATION_DIR, 'jre-8u121-windows-i586.exe'))
+        cmd = '{} /s' .format(os.path.join(INSTALLATION_DIR, 'jre-8u121-windows-i586.exe'))
         with install_notifier('Java jre'):
             subprocess.call(cmd.split())
 
@@ -86,39 +86,35 @@ def install_pycharm():
 
 
 def install_vcpy27():
-    cmd = 'msiexec /i "{}" /quiet /passive'.format(os.path.join(PYTHON_INSTALLATION_DIR, 'VCForPython27.msi'))
+    cmd = 'msiexec /i "{}" /quiet /passive'.format(os.path.join(SOFTWARES_DIR, 'VCForPython27.msi'))
 
     with install_notifier('Visual C++ Compiler for Python 2.7'):
         subprocess.call(cmd.split())
 
 
-def install_with_pip(packages_file, cache_dir, notifier_title):
+def install_with_pip(packages_file, notifier_title):
     with open(packages_file) as f:
         for package in f:
             if package.startswith('#'):
                 continue
             package = package.strip()
-            cmd = 'install --find-links={} --no-index -q {}'.format(cache_dir, package)
+            cmd = 'install --find-links={} --no-index -q {}'.format(CACHE_DIRECTORY, package)
             with install_notifier('{} - {}'.format(notifier_title, package)):
                 pip.main(cmd.split())
 
 
 def install_python_packages():
-    packages_file = os.path.join(PYTHON_INSTALLATION_DIR, 'python.packages')
-    cache_dir = os.path.join(PYTHON_INSTALLATION_DIR, 'cache')
-
-    install_with_pip(packages_file, cache_dir, 'Python Package')
+    packages_file = os.path.join(INSTALLATION_DIR, 'python.packages')
+    install_with_pip(packages_file, 'Python Package')
 
 
 def install_networks_packages():
-    packages_file = os.path.join(NETWORKS_INSTALLATION_DIR, 'networks.packages')
-    cache_dir = os.path.join(NETWORKS_INSTALLATION_DIR, 'cache')
-
-    install_with_pip(packages_file, cache_dir, 'Python Package for Networks')
+    packages_file = os.path.join(INSTALLATION_DIR, 'networks.packages')
+    install_with_pip(packages_file, 'Python Package for Networks')
 
 
 def install_winpcap():
-    cmd = os.path.join(NETWORKS_INSTALLATION_DIR, 'WinPcap_4_1_3.exe')
+    cmd = os.path.join(SOFTWARES_DIR, 'WinPcap_4_1_3.exe')
 
     with install_notifier('WinPcap 4.1.3'):
         subprocess.call(cmd.split())
@@ -126,7 +122,7 @@ def install_winpcap():
 
 def install_wireshark():
     installation_path = os.path.join(os.getcwd(), 'wireshark')
-    cmd = '{} /S /D={}'.format(os.path.join(NETWORKS_INSTALLATION_DIR, 'Wireshark-win32-2.2.5.exe'),
+    cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'Wireshark-win32-2.2.5.exe'),
                                installation_path)
 
     with install_notifier('Wireshark 2.2.5'):
@@ -148,8 +144,8 @@ def test_everything_is_good():
     print '\t[*] {}'.format(fix_width('Python install {}successfully'.format(Fore.GREEN)))
 
     libraries_paths = (
-        os.path.join(PYTHON_INSTALLATION_DIR, 'python.packages'),
-        os.path.join(NETWORKS_INSTALLATION_DIR, 'networks.packages')
+        os.path.join(INSTALLATION_DIR, 'python.packages'),
+        os.path.join(INSTALLATION_DIR, 'networks.packages')
     )
 
     for libraries_path in libraries_paths:
