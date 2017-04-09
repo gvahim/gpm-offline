@@ -15,7 +15,7 @@ STEPS = (
     ('Install WinPcap', 'Ininstalling...', install_winpcap),
     ('Install WireShark', 'Ininstalling...', install_wireshark),
     ('Install Networks Packages', 'Ininstalling...', install_networks_packages),
-    # ('Setting Up Environment Variables', 'Setting...', set_environment_variable),
+    ('Setting Up Environment Variables', 'Setting...', set_environment_variable),
     ('Install Tests', 'Testing...', test_everything_is_good)
 )
 
