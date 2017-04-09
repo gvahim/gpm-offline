@@ -25,13 +25,22 @@ set WIRESHARK_DIR=%cd%\wireshark
     set /a sstage+=1
     call:Display "Installing Python" "installing..." "[i] INFO" %sstage%
     msiexec /i "%INSTALLATION_DIR%\softwares\python.msi" /quiet /passive TARGETDIR=%PYTHON_DIR%
-    echo installing python - D O N E
+    echo Installing Python - D O N E
     <nul set /p ".=Adding python to path		"
     setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" >nul
     echo [D O N E]
 
     echo installing libraries
     "%PYTHON_DIR%\python.exe" -m pip install --find-links=%INSTALLATION_DIR%\cache --no-index -q colorama
+
+    echo python installer take over
+    net session >nul 2>&1
+
+:visualCForPython27
+    set /a sstage+=1
+    call:Display "Installing Visual C++ For Python27" "installing..." "[i] INFO" %sstage%
+    msiexec /i "%INSTALLATION_DIR%\softwares\VCForPython27.msi" /quiet /passive
+    echo Installing Visual C++ For Python27 - D O N E
 
     echo python installer take over
     net session >nul 2>&1

@@ -10,7 +10,6 @@ INSTALLER_TITLE = 'Gvahim Package Installer - v{}'.format(INSTALLER_VERSION)
 
 STEPS = (
     ('Uninstall Old Heights Installation', 'Uninstalling...', uninstall_heights),
-    ('Install Visual C++ Compiler for Python', 'Ininstalling...', install_vcpy27),
     ('Install Python Packages', 'Ininstalling...', install_python_packages),
     ('Install PyCharm', 'Ininstalling...', install_pycharm),
     ('Install WinPcap', 'Ininstalling...', install_winpcap),

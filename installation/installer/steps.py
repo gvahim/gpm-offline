@@ -84,13 +84,6 @@ def install_pycharm():
     create_shortcut('PyCharm', exe_path)
 
 
-def install_vcpy27():
-    cmd = 'msiexec /i "{}" /quiet /passive'.format(os.path.join(SOFTWARES_DIR, 'VCForPython27.msi'))
-
-    with notifier('Visual C++ Compiler for Python 2.7'):
-        subprocess.call(cmd.split())
-
-
 def install_with_pip(packages_file, notifier_title):
     with open(packages_file) as f:
         for package in f:
