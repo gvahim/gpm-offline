@@ -143,14 +143,19 @@ def set_environment_variable():
         return value
 
     path = read_system_environment_variable()
+    path = path.split(';')
 
-    for variable in ('PYTHONPATH', 'WIRESHARKPATH'):
-        full_name = '%{}%'.format(variable)
-        if full_name not in path:
-            with notifier('Adding {} to PATH'.format(variable)):
-                path = '{};{}'.format(path, full_name)
+    path = filter(lambda a: 'python' in a.lower() or 'wireshark' in a.lower(), path)
 
-    set_system_environment_variable('Path', path)
+    path.extend(
+        [
+            os.path.join(os.getcwd(), 'python27'),
+            os.path.join(os.getcwd(), 'python27', 'Scripts'),
+            os.path.join(os.getcwd(), 'wireshark')
+        ]
+    )
+
+    set_system_environment_variable('Path', ';'.join(path))
 
 
 def test_everything_is_good():
@@ -169,13 +174,22 @@ def test_everything_is_good():
         os.path.join(INSTALLATION_DIR, 'networks.packages')
     )
 
+    custom_libraries = {
+        'ipython': 'IPython',
+        'pycrypto': 'Crypto',
+        'pyserial': 'serial',
+        'python-dateutil': 'dateutil',
+        'Pillow': 'PIL'
+    }
+
     for libraries_path in libraries_paths:
         with open(libraries_path) as file_:
             for library in file_:
                 if library.startswith('#'):
                     continue
 
-                library = library.split()
+                library = library.strip().split('=')[0]
+                library = custom_libraries.get(library, library)
                 try:
                     importlib.import_module(library)
                     msg = '{}successfully'.format(Fore.GREEN)
@@ -189,5 +203,4 @@ def test_everything_is_good():
 
 
 if __name__ == '__main__':
-    install_wireshark()
-    set_environment_variable()
+    test_everything_is_good()

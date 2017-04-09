@@ -27,7 +27,7 @@ set WIRESHARK_DIR=%cd%\wireshark
     msiexec /i "%INSTALLATION_DIR%\softwares\python.msi" /quiet /passive TARGETDIR=%PYTHON_DIR%
     echo Installing Python - D O N E
     <nul set /p ".=Adding python to path		"
-    setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" >nul
+    setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" /M >nul
     echo [D O N E]
 
     echo installing libraries
