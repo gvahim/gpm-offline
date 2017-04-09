@@ -36,8 +36,8 @@ def is_64bit_machine():
 
 
 @contextmanager
-def install_notifier(name):
-    msg = '[i] installing {}...'.format(name)
+def notifier(name, msg='installing', tab=False):
+    msg = '{}[i] {} {}...'.format('\t' if tab else '', msg, name)
     print fix_width(msg),
     yield
     print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)

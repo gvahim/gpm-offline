@@ -40,11 +40,6 @@ set WIRESHARK_DIR=%cd%\wireshark
     "%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
     set /a sstage+=%errorlevel%
 
-:wiresharkPath
-    set /a sstage+=1
-    call:Display "Setting Wireshark Path" "setting..." "[i] INFO" %sstage%
-    setx WIRESHARKPATH "%WIRESHARK_DIR%" >nul
-
 :cleanup
     set /a sstage+=1
     call:Display "Cleanup Environment" "cleaning up...." "[i] INFO" %sstage%

@@ -5,7 +5,7 @@ import _winreg
 import importlib
 import subprocess
 from colorama import Fore
-from utils import create_shortcut, is_64bit_machine, install_notifier, heights_path, fix_width, DESKTOP_DIR
+from utils import create_shortcut, is_64bit_machine, notifier, heights_path, fix_width, DESKTOP_DIR
 
 INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation')
 SOFTWARES_DIR = os.path.join(INSTALLATION_DIR, 'softwares')
@@ -31,9 +31,8 @@ def uninstall_heights():
         for func, (msg, file_) in deletes:
             del_path = os.path.join(path, file_)
             if os.path.exists(del_path):
-                print '\t[*]{}'.format(fix_width(msg)),
-                func(del_path)
-                print '{}[D O N E}'.format(Fore.LIGHTMAGENTA_EX)
+                with notifier(msg, '', True):
+                    func(del_path)
 
         # remove shortcuts
         shortcuts = filter(lambda a: a.endswith('Heights.lnk') or a.endswith('Heights-PyCharm.lnk'),
@@ -66,7 +65,7 @@ def install_pycharm():
     cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'PyCharm.exe'),
                                installation_path)
 
-    with install_notifier('PyCharm 2017.1'):
+    with notifier('PyCharm 2017.1'):
         subprocess.call(cmd.split())
 
     exe_name = 'pycharm'
@@ -77,7 +76,7 @@ def install_pycharm():
         print 'Need to install Java jre...'
 
         cmd = '{} /s' .format(os.path.join(INSTALLATION_DIR, 'jre-8u121-windows-i586.exe'))
-        with install_notifier('Java jre'):
+        with notifier('Java jre'):
             subprocess.call(cmd.split())
 
     exe_name = '{}.exe'.format(exe_name)
@@ -88,7 +87,7 @@ def install_pycharm():
 def install_vcpy27():
     cmd = 'msiexec /i "{}" /quiet /passive'.format(os.path.join(SOFTWARES_DIR, 'VCForPython27.msi'))
 
-    with install_notifier('Visual C++ Compiler for Python 2.7'):
+    with notifier('Visual C++ Compiler for Python 2.7'):
         subprocess.call(cmd.split())
 
 
@@ -99,7 +98,7 @@ def install_with_pip(packages_file, notifier_title):
                 continue
             package = package.strip()
             cmd = 'install --find-links={} --no-index -q {}'.format(CACHE_DIRECTORY, package)
-            with install_notifier('{} - {}'.format(notifier_title, package)):
+            with notifier('{} - {}'.format(notifier_title, package)):
                 pip.main(cmd.split())
 
 
@@ -116,7 +115,7 @@ def install_networks_packages():
 def install_winpcap():
     cmd = os.path.join(SOFTWARES_DIR, 'WinPcap.exe')
 
-    with install_notifier('WinPcap 4.1.3'):
+    with notifier('WinPcap 4.1.3'):
         subprocess.call(cmd.split())
 
 
@@ -125,11 +124,32 @@ def install_wireshark():
     cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'Wireshark.exe'),
                                installation_path)
 
-    with install_notifier('Wireshark 2.2.5'):
+    with notifier('Wireshark 2.2.5'):
+        subprocess.call(cmd.split())
+
+    with notifier('Setting up WIRESHARKPATH environment variable', ''):
+        cmd = 'setx WIRESHARKPATH "{}" /m > nul'.format(installation_path)
         subprocess.call(cmd.split())
 
     exe_path = os.path.join(installation_path, 'Wireshark.exe')
     create_shortcut('Wireshark', exe_path)
+
+
+def set_environment_variable():
+    def read_system_environment_variable(name='path'):
+        k = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment')
+        value, type_ = _winreg.QueryValueEx(k, name)
+        _winreg.CloseKey(k)
+        return value
+
+    path = read_system_environment_variable()
+    cmd = 'setx PATH "%PATH%;%{}%" /m > nul'
+
+    for variable in ('PYTHONPATH', 'WIRESHARKPATH'):
+        full_name = '%{}%'.format(variable)
+        if full_name not in path:
+            with notifier('Adding {} to PATH'.format(variable)):
+                subprocess.call(cmd.format(variable).split())
 
 
 def test_everything_is_good():
