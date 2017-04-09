@@ -9,8 +9,6 @@ from contextlib import contextmanager
 from hurry.filesize import size, alternative
 
 INSTALLATION_DIR = 'installation'
-CACHE_DIR = os.path.join(INSTALLATION_DIR, 'cache')
-SOFTWARES_DIR = os.path.join(INSTALLATION_DIR, 'softwares')
 WINRAR = r'C:\Program Files (x86)\WinRAR\rar.exe'
 
 PACKAGES = {
@@ -58,21 +56,20 @@ SOFTWARES_64BIT = {
 
 @contextmanager
 def download_notifier(name):
-    msg = 'Downloading {}...'.format(name)
-    print fix_width(msg),
+    print fix_width('Downloading {}...'.format(name)),
     yield
     print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
 
 
-def fix_width(msg, width=65):
+def fix_width(message, width=65):
     fmt = '{{:{}}}'.format(width)
-    return fmt.format(msg)
+    return fmt.format(message)
 
 
 @contextmanager
-def change_directory(path):
+def change_directory(path_):
     save = os.getcwd()
-    os.chdir(path)
+    os.chdir(path_)
     yield
     os.chdir(save)
 
@@ -83,7 +80,7 @@ def pip_download(package_):
         pip.main(cmd.split())
 
 
-def download_file(name, url):
+def download_file(name, url, software_dir_):
     def report_download(count, block_size, total_size):
         percent = int(count * block_size * 100 / total_size)
         equal = int(percent * 0.7)
@@ -94,46 +91,54 @@ def download_file(name, url):
 
     print 'Downloading {} from {}...'.format(name, url)
     filename, file_extension = os.path.splitext(url)
-    save_path = os.path.join(SOFTWARES_DIR, '{}{}'.format(name, file_extension))
+    save_path = os.path.join(software_dir_, '{}{}'.format(name, file_extension))
     urllib.urlretrieve(url, save_path, report_download)
     print
     return save_path
 
 
-def create_empty_directory(path):
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.mkdir(path)
+def create_empty_directory(path_):
+    if os.path.exists(path_):
+        shutil.rmtree(path_)
+    os.mkdir(path_)
 
 
-def calculate_sha256(path):
-    with open(path, 'rb') as f:
+def calculate_sha256(path_):
+    with open(path_, 'rb') as f:
         return hashlib.sha256(f.read()).hexdigest()
 
 if __name__ == '__main__':
     init(autoreset=True)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--pass-pip', action='store_true')
     parser.add_argument('--machine64', action='store_true')
 
     args = parser.parse_args()
 
-    if not args.pass_pip:
-        create_empty_directory(CACHE_DIR)
-        with change_directory(CACHE_DIR):
-            for package in PACKAGES['packages']:
-                pip_download(package)
+    directory = 'gvahim{}'.format('_64bit' if args.machine64 else '')
+    create_empty_directory(directory)
+    shutil.copyfile('install.cmd', os.path.join(directory, 'install.cmd'))
+    shutil.copytree(INSTALLATION_DIR, os.path.join(directory, INSTALLATION_DIR))
+    if args.machine64:
+        os.remove(os.path.join('gvahim_64bit', INSTALLATION_DIR, 'jre-8u121-windows-i586.exe'))
 
-            for requirement in PACKAGES['requirements']:
-                with open(requirement) as file_:
-                    for package in file_:
-                        if package.startswith('#'):
-                            continue
-                        package = package.strip()
-                        pip_download(package)
+    cache_dir = os.path.join(directory, INSTALLATION_DIR, 'cache')
+    software_dir = os.path.join(directory, INSTALLATION_DIR, 'softwares')
 
-    create_empty_directory(SOFTWARES_DIR)
+    create_empty_directory(cache_dir)
+    with change_directory(cache_dir):
+        for package in PACKAGES['packages']:
+            pip_download(package)
+
+        for requirement in PACKAGES['requirements']:
+            with open(requirement) as file_:
+                for package in file_:
+                    if package.startswith('#'):
+                        continue
+                    package = package.strip()
+                    pip_download(package)
+
+    create_empty_directory(software_dir)
     softwares = [GENERAL_SOFTWARES]
     if args.machine64:
         softwares.append(SOFTWARES_64BIT)
@@ -142,7 +147,7 @@ if __name__ == '__main__':
 
     for software in softwares:
         for name_, (url_, hash_) in software.iteritems():
-            path = download_file(name_, url_)
+            path = download_file(name_, url_, software_dir)
             calc_hash = calculate_sha256(path)
             if hash_ == calc_hash:
                 color = Fore.GREEN
@@ -152,10 +157,3 @@ if __name__ == '__main__':
                 msg = 'E R R O R'
             msg_ = '{} - Verify download ... '.format(name_)
             print '{}{}[{}]'.format(fix_width(msg_), color, msg)
-
-    directory = 'gvahim{}'.format('_64bit' if args.machine64 else '')
-    create_empty_directory(directory)
-    shutil.copyfile('install.cmd', os.path.join(directory, 'install.cmd'))
-    shutil.copytree('installation', os.path.join(directory, 'installation'))
-    if args.machine64:
-        os.remove(os.path.join('gvahim_64bit', 'installation', 'jre-8u121-windows-i586.exe')
