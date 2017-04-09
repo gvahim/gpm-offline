@@ -152,3 +152,10 @@ if __name__ == '__main__':
                 msg = 'E R R O R'
             msg_ = '{} - Verify download ... '.format(name_)
             print '{}{}[{}]'.format(fix_width(msg_), color, msg)
+
+    directory = 'gvahim{}'.format('_64bit' if args.machine64 else '')
+    create_empty_directory(directory)
+    shutil.copyfile('install.cmd', os.path.join(directory, 'install.cmd'))
+    shutil.copytree('installation', os.path.join(directory, 'installation'))
+    if args.machine64:
+        os.remove(os.path.join('gvahim_64bit', 'installation', 'jre-8u121-windows-i586.exe')
