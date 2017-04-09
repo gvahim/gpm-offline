@@ -63,7 +63,7 @@ def uninstall_heights():
 
 def install_pycharm():
     installation_path = os.path.join(os.getcwd(), 'pycharm')
-    cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'pycharm-community-2017.1.exe'),
+    cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'PyCharm.exe'),
                                installation_path)
 
     with install_notifier('PyCharm 2017.1'):
@@ -114,7 +114,7 @@ def install_networks_packages():
 
 
 def install_winpcap():
-    cmd = os.path.join(SOFTWARES_DIR, 'WinPcap_4_1_3.exe')
+    cmd = os.path.join(SOFTWARES_DIR, 'WinPcap.exe')
 
     with install_notifier('WinPcap 4.1.3'):
         subprocess.call(cmd.split())
@@ -122,7 +122,7 @@ def install_winpcap():
 
 def install_wireshark():
     installation_path = os.path.join(os.getcwd(), 'wireshark')
-    cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'Wireshark-win32-2.2.5.exe'),
+    cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'Wireshark.exe'),
                                installation_path)
 
     with install_notifier('Wireshark 2.2.5'):

@@ -25,13 +25,13 @@ GENERAL_SOFTWARES = {
 }
 
 SOFTWARES_32BIT = {
-    'Wireshark32': 'https://1.as.dl.wireshark.org/win32/Wireshark-win32-2.2.5.exe',
-    'Python32': 'https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi',
+    'Wireshark': 'https://1.as.dl.wireshark.org/win32/Wireshark-win32-2.2.5.exe',
+    'python': 'https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi',
 }
 
 SOFTWARES_64BIT = {
-    'Wireshark64': 'https://1.as.dl.wireshark.org/win64/Wireshark-win64-2.2.5.exe',
-    'Python64': 'https://www.python.org/ftp/python/2.7.13/python-2.7.13.amd64.msi',
+    'Wireshark': 'https://1.as.dl.wireshark.org/win64/Wireshark-win64-2.2.5.exe',
+    'python': 'https://www.python.org/ftp/python/2.7.13/python-2.7.13.amd64.msi',
 }
 
 
@@ -72,8 +72,8 @@ def download_file(name, url):
                                                                              file_name=name),
 
     print 'Downloading {} from {}...'.format(name, url)
-    head, tail = os.path.split(url)
-    save_path = os.path.join(SOFTWARES_DIR, tail)
+    filename, file_extension = os.path.splitext(url)
+    save_path = os.path.join(SOFTWARES_DIR, '{}{}'.format(name, file_extension))
     urllib.urlretrieve(url, save_path, report_download)
     print
 

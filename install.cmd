@@ -24,7 +24,7 @@ set WIRESHARK_DIR=%cd%\wireshark
 :pythonInstall
     set /a sstage+=1
     call:Display "Installing Python" "installing..." "[i] INFO" %sstage%
-    msiexec /i "%INSTALLATION_DIR%\python\python-2.7.13.msi" /quiet /passive TARGETDIR=%PYTHON_DIR%
+    msiexec /i "%INSTALLATION_DIR%\softwares\python.msi" /quiet /passive TARGETDIR=%PYTHON_DIR%
     echo installing python - D O N E
     <nul set /p ".=Adding python to path		"
     setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" >nul
