@@ -135,7 +135,7 @@ if __name__ == '__main__':
 
     create_empty_directory(SOFTWARES_DIR)
     softwares = [GENERAL_SOFTWARES]
-    if args.is64bit:
+    if args.machine64:
         softwares.append(SOFTWARES_64BIT)
     else:
         softwares.append(SOFTWARES_32BIT)
