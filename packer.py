@@ -20,7 +20,7 @@ PACKAGES = {
 
 GENERAL_SOFTWARES = {
     'WinPcap': 'https://www.winpcap.org/install/bin/WinPcap_4_1_3.exe',
-    'PyCharm': 'https://download.jetbrains.com/python/pycharm-professional-2017.1.exe',
+    'PyCharm': 'https://download.jetbrains.com/python/pycharm-community-2017.1.exe',
     'VCForPython27': 'https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi'
 }
 
@@ -77,31 +77,36 @@ def download_file(name, url):
     urllib.urlretrieve(url, save_path, report_download)
     print
 
+
+def create_empty_directory(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+
 if __name__ == '__main__':
     init(autoreset=True)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--is64bit', action='store_true')
-
-    for directory in (CACHE_DIR, SOFTWARES_DIR):
-        if os.path.exists(directory):
-            shutil.rmtree(directory)
-        os.mkdir(directory)
+    parser.add_argument('--pass-pip', action='store_true')
+    parser.add_argument('--machine64', action='store_true')
 
     args = parser.parse_args()
 
-    with change_directory(CACHE_DIR):
-        for package in PACKAGES['packages']:
-            pip_download(package)
+    if not args.pass_pip:
+        create_empty_directory(CACHE_DIR)
+        with change_directory(CACHE_DIR):
+            for package in PACKAGES['packages']:
+                pip_download(package)
 
-        for requirement in PACKAGES['requirements']:
-            with open(requirement) as file_:
-                for package in file_:
-                    if package.startswith('#'):
-                        continue
-                    package = package.strip()
-                    pip_download(package)
+            for requirement in PACKAGES['requirements']:
+                with open(requirement) as file_:
+                    for package in file_:
+                        if package.startswith('#'):
+                            continue
+                        package = package.strip()
+                        pip_download(package)
 
+    create_empty_directory(SOFTWARES_DIR)
     softwares = [GENERAL_SOFTWARES]
     if args.is64bit:
         softwares.append(SOFTWARES_64BIT)
