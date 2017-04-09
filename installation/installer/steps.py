@@ -121,11 +121,18 @@ def install_wireshark():
         subprocess.call(cmd.split())
 
     with notifier('Setting up WIRESHARKPATH environment variable', ''):
-        cmd = 'setx WIRESHARKPATH "{}" /m > nul'.format(installation_path)
-        subprocess.call(cmd.split())
+        set_system_environment_variable('WIRESHARKPATH', installation_path)
 
     exe_path = os.path.join(installation_path, 'Wireshark.exe')
     create_shortcut('Wireshark', exe_path)
+
+
+def set_system_environment_variable(name, value):
+    k = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
+                        0, _winreg.KEY_WRITE)
+    _winreg.SetValueEx(k, name, 0, _winreg.REG_SZ, value)
+    _winreg.CloseKey(k)
+    return value
 
 
 def set_environment_variable():
@@ -136,13 +143,14 @@ def set_environment_variable():
         return value
 
     path = read_system_environment_variable()
-    cmd = 'setx PATH "%PATH%;%{}%" /m > nul'
 
     for variable in ('PYTHONPATH', 'WIRESHARKPATH'):
         full_name = '%{}%'.format(variable)
         if full_name not in path:
             with notifier('Adding {} to PATH'.format(variable)):
-                subprocess.call(cmd.format(variable).split())
+                path = '{};{}'.format(path, full_name)
+
+    set_system_environment_variable('Path', path)
 
 
 def test_everything_is_good():
@@ -181,7 +189,5 @@ def test_everything_is_good():
 
 
 if __name__ == '__main__':
-    # print PYTHON_INSTALLATION_DIR
-    # install_networks_packages()
-    # test_everything_is_good()
-    importlib.import_module('ori')
+    install_wireshark()
+    set_environment_variable()
