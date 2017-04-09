@@ -115,6 +115,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    for directory in ('cache', 'softwares'):
+        path = os.path.join(INSTALLATION_DIR, directory)
+        if os.path.exists(path):
+            shutil.rmtree(path)
+
     directory = 'gvahim{}'.format('_64bit' if args.machine64 else '')
     create_empty_directory(directory)
     shutil.copyfile('install.cmd', os.path.join(directory, 'install.cmd'))
