@@ -108,7 +108,7 @@ def create_empty_directory(path):
 
 def calculate_sha256(path):
     with open(path, 'rb') as f:
-        return hashlib.sha256(f.read()).digest()
+        return hashlib.sha256(f.read()).hexdigest()
 
 if __name__ == '__main__':
     init(autoreset=True)
