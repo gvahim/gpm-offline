@@ -145,7 +145,7 @@ def set_environment_variable():
     path = read_system_environment_variable()
     path = path.split(';')
 
-    path = filter(lambda a: 'python' in a.lower() or 'wireshark' in a.lower(), path)
+    path = filter(lambda a: 'python' not in a.lower() and 'wireshark' not in a.lower(), path)
 
     path.extend(
         [
@@ -203,4 +203,4 @@ def test_everything_is_good():
 
 
 if __name__ == '__main__':
-    test_everything_is_good()
+    set_environment_variable()

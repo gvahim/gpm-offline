@@ -27,11 +27,13 @@ set WIRESHARK_DIR=%cd%\wireshark
     msiexec /i "%INSTALLATION_DIR%\softwares\python.msi" /quiet /passive TARGETDIR=%PYTHON_DIR%
     echo Installing Python - D O N E
     <nul set /p ".=Adding python to path		"
-    setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" /M >nul
+    setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" /M > nul
     echo [D O N E]
 
     echo installing libraries
     "%PYTHON_DIR%\python.exe" -m pip install --find-links=%INSTALLATION_DIR%\cache --no-index -q colorama
+
+    "%PYTHON_DIR%\python.exe" "%PYTHON_DIR%\Tools\Scripts\win_add2path.py" > nul
 
     echo python installer take over
     net session >nul 2>&1
