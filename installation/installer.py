@@ -1,21 +1,24 @@
 import time
 import ctypes
 import argparse
+
 from colorama import init
 from installer.steps import *
 from installer.display import display
 
-INSTALLER_VERSION = '1.0'
+INSTALLER_VERSION = '1.1'
 INSTALLER_TITLE = 'Gvahim Package Installer - v{}'.format(INSTALLER_VERSION)
 
 STEPS = (
-    ('Uninstall Old Heights Installation', 'Uninstalling...', uninstall_heights),
+    # ('Uninstall Old Heights Installation', 'Uninstalling...',
+    #  uninstall_heights),
     ('Install Python Packages', 'Ininstalling...', install_python_packages),
     ('Install PyCharm', 'Ininstalling...', install_pycharm),
     ('Install WinPcap', 'Ininstalling...', install_winpcap),
     ('Install WireShark', 'Ininstalling...', install_wireshark),
     ('Install Networks Packages', 'Ininstalling...', install_networks_packages),
-    ('Setting Up Environment Variables', 'Setting...', set_environment_variable),
+    ('Setting Up Environment Variables', 'Setting...',
+     set_environment_variable),
     ('Install Tests', 'Testing...', test_everything_is_good)
 )
 
@@ -23,6 +26,7 @@ STEPS = (
 def init_display():
     ctypes.windll.kernel32.SetConsoleTitleA(INSTALLER_TITLE)
     init(autoreset=True)
+
 
 if __name__ == '__main__':
     init_display()

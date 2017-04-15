@@ -8,7 +8,7 @@ set WIRESHARK_DIR=%cd%\wireshark
 
 :InitState
 	cls
-	Title Gvahim Package Installer - v1.0 & Color 0A
+	Title Gvahim Package Installer - v1.1
 	set /a sstage=0
 
 :check_Permissions
@@ -59,6 +59,7 @@ set WIRESHARK_DIR=%cd%\wireshark
 
 :Display
 	cls
+	color 0A
 	echo /*------------------------------------------------------------------*\
 	echo ^|                         - [ Stage %~4 ] -
 	echo ^|                   __________________________
@@ -74,6 +75,6 @@ set WIRESHARK_DIR=%cd%\wireshark
 	echo ^|                                                        _\^|/_
 	echo ^|                                                        (o o)
 	echo \*----------------------------------------------------oOO-{_}-OOo---*/
-	rem pause
+	color 07
 	PING -n 2 127.0.0.1 > nul
 	goto:eof

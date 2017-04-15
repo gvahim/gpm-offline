@@ -1,4 +1,5 @@
 import os
+
 from colorama import Fore
 
 SCREEN = """
@@ -22,7 +23,8 @@ SCREEN = """
 
 class InvalidTitle3Error(Exception):
     def __init__(self, title):
-        super(InvalidTitle3Error, self).__init__("Title3 must be 'info' or 'error' got %s" % title)
+        super(InvalidTitle3Error, self).__init__(
+            "Title3 must be 'info' or 'error' got %s" % title)
 
 
 def display(stage, t1, t2, t3):
@@ -44,4 +46,5 @@ def display(stage, t1, t2, t3):
 
     t3 = '[{}] {}'.format(t3[0], t3.upper())
     t3 = t3.center(17)
-    print Fore.LIGHTGREEN_EX + SCREEN.format(stage=stage, t1=t1, t2=t2, t3=t3).strip()
+    print Fore.LIGHTGREEN_EX + SCREEN.format(stage=stage, t1=t1, t2=t2,
+                                             t3=t3).strip()

@@ -2,21 +2,22 @@ import os
 import string
 import platform
 import subprocess
+
 from ctypes import windll
 from colorama import Fore
 from contextlib import contextmanager
 
-SHORTCUT = INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation', 'Shortcut.exe')
+INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation')
+SHORTCUT = os.path.join(INSTALLATION_DIR, 'Shortcut.exe')
 DESKTOP_DIR = os.path.join(os.path.expanduser('~'), 'Desktop')
 
 
 def create_shortcut(shortcut_name, path):
-    msg = '[i] Creating shortcut for {}'.format(shortcut_name)
-    print fix_width(msg),
-    cmd = '{} /A:C /F:{}\\{}.lnk /T:{}'.format(SHORTCUT, DESKTOP_DIR, shortcut_name, path)
-    with open(os.devnull, 'w') as fnull:
-        subprocess.call(cmd.split(), stdout=fnull)
-    print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
+    with notifier(shortcut_name, 'Creating shortcut for', dot=False):
+        cmd = '{} /A:C /F:{}\\{}.lnk /T:{}'.format(SHORTCUT, DESKTOP_DIR,
+                                                   shortcut_name, path)
+        with open(os.devnull, 'w') as fnull:
+            subprocess.call(cmd.split(), stdout=fnull)
 
 
 def is_valid_os():
@@ -36,11 +37,16 @@ def is_64bit_machine():
 
 
 @contextmanager
-def notifier(name, msg='installing', tab=False):
-    msg = '{}[i] {} {}...'.format('\t' if tab else '', msg, name)
+def notifier(name, msg='installing', tab=False, dot=True,
+             color=Fore.LIGHTMAGENTA_EX):
+
+    tab = '\t' if tab else ''
+    dot = '...' if dot else ''
+
+    msg = '{}[i] {} {}{}'.format(tab, msg, name, dot)
     print fix_width(msg),
     yield
-    print '{}[D O N E]'.format(Fore.LIGHTMAGENTA_EX)
+    print '{}[D O N E]'.format(color)
 
 
 def get_drives():
@@ -58,10 +64,12 @@ def fix_width(msg, width=65):
 
 def heights_path():
     for drive in get_drives():
-        dirs = filter(lambda a: 'heights' == a.lower(), os.listdir('{}:\\'.format(drive)))
+        dirs = filter(lambda a: 'heights' == a.lower(),
+                      os.listdir('{}:\\'.format(drive)))
         if len(dirs) == 1:
             return r'{}:\{}'.format(drive, dirs[0])
     return None
+
 
 if __name__ == '__main__':
     print SHORTCUT
