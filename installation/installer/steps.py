@@ -5,15 +5,16 @@ import _winreg
 import importlib
 import subprocess
 from colorama import Fore
-from utils import create_shortcut, is_64bit_machine, notifier, heights_path, fix_width, DESKTOP_DIR
+from utils import create_shortcut, is_64bit_machine, notifier, heights_path, \
+    fix_width, DESKTOP_DIR
 
 INSTALLATION_DIR = os.path.join(os.getcwd(), 'installation')
 SOFTWARES_DIR = os.path.join(INSTALLATION_DIR, 'softwares')
 CACHE_DIRECTORY = os.path.join(INSTALLATION_DIR, 'cache')
+SYSTEM_ENVIRON = 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
 
 
 def uninstall_heights():
-
     path = heights_path()
     if not path:
         print '[i] Cannot detect old heights installation...'
@@ -35,7 +36,8 @@ def uninstall_heights():
                     func(del_path)
 
         # remove shortcuts
-        shortcuts = filter(lambda a: a.endswith('Heights.lnk') or a.endswith('Heights-PyCharm.lnk'),
+        shortcuts = filter(lambda a: a.endswith('Heights.lnk') or a.endswith(
+            'Heights-PyCharm.lnk'),
                            os.listdir(DESKTOP_DIR))
         for shortcut in shortcuts:
             shortcut_path = os.path.join(DESKTOP_DIR, shortcut)
@@ -46,15 +48,23 @@ def uninstall_heights():
         keys = (
             (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Classes\Python.File\\'),
             (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Classes\Pythonw.File\\'),
-            (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Classes\wireshark-capture-file\\'),
-            (_winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Wow6432Node\Python\PythonCore\2.7\\'),
+            (_winreg.HKEY_LOCAL_MACHINE,
+             r'SOFTWARE\Classes\wireshark-capture-file\\'),
+            (_winreg.HKEY_LOCAL_MACHINE,
+             r'SOFTWARE\Wow6432Node\Python\PythonCore\2.7\\'),
 
-            (_winreg.HKEY_CLASSES_ROOT, r'Pythonw.File\shell\Open with Heights Pycharm'),
-            (_winreg.HKEY_CLASSES_ROOT, r'Python.File\shell\Open with Heights Pycharm'),
-            (_winreg.HKEY_CLASSES_ROOT, r'Pythonw.File\shell\Open with Heights IDLE'),
-            (_winreg.HKEY_CLASSES_ROOT, r'Python.File\shell\Open with Heights IDLE'),
-            (_winreg.HKEY_CLASSES_ROOT, r'Pythonw.File\shell\Open with Heights Notepad++'),
-            (_winreg.HKEY_CLASSES_ROOT, r'Python.File\shell\Open with Heights Notepad++'),
+            (_winreg.HKEY_CLASSES_ROOT,
+             r'Pythonw.File\shell\Open with Heights Pycharm'),
+            (_winreg.HKEY_CLASSES_ROOT,
+             r'Python.File\shell\Open with Heights Pycharm'),
+            (_winreg.HKEY_CLASSES_ROOT,
+             r'Pythonw.File\shell\Open with Heights IDLE'),
+            (_winreg.HKEY_CLASSES_ROOT,
+             r'Python.File\shell\Open with Heights IDLE'),
+            (_winreg.HKEY_CLASSES_ROOT,
+             r'Pythonw.File\shell\Open with Heights Notepad++'),
+            (_winreg.HKEY_CLASSES_ROOT,
+             r'Python.File\shell\Open with Heights Notepad++'),
         )
         for key, sub_key in keys:
             _winreg.DeleteKey(key, sub_key)
@@ -65,7 +75,7 @@ def install_pycharm():
     cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'PyCharm.exe'),
                                installation_path)
 
-    with notifier('PyCharm 2017.1'):
+    with notifier('PyCharm 2017.1.1'):
         subprocess.call(cmd.split())
 
     exe_name = 'pycharm'
@@ -75,7 +85,8 @@ def install_pycharm():
         print 'Detecting 32bit system...'
         print 'Need to install Java jre...'
 
-        cmd = '{} /s' .format(os.path.join(INSTALLATION_DIR, 'jre-8u121-windows-i586.exe'))
+        cmd = '{} /s'.format(
+            os.path.join(INSTALLATION_DIR, 'jre-8u121-windows-i586.exe'))
         with notifier('Java jre'):
             subprocess.call(cmd.split())
 
@@ -90,7 +101,8 @@ def install_with_pip(packages_file, notifier_title):
             if package.startswith('#'):
                 continue
             package = package.strip()
-            cmd = 'install --find-links={} --no-index -q {}'.format(CACHE_DIRECTORY, package)
+            cmd = 'install --find-links={} --no-index -q {}'.format(
+                CACHE_DIRECTORY, package)
             with notifier('{} - {}'.format(notifier_title, package)):
                 pip.main(cmd.split())
 
@@ -117,7 +129,7 @@ def install_wireshark():
     cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'Wireshark.exe'),
                                installation_path)
 
-    with notifier('Wireshark 2.2.5'):
+    with notifier('Wireshark 2.2.6'):
         subprocess.call(cmd.split())
 
     with notifier('Setting up WIRESHARKPATH environment variable', ''):
@@ -128,8 +140,8 @@ def install_wireshark():
 
 
 def set_system_environment_variable(name, value):
-    k = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
-                        0, _winreg.KEY_WRITE)
+    k = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, SYSTEM_ENVIRON, 0,
+                        _winreg.KEY_WRITE)
     _winreg.SetValueEx(k, name, 0, _winreg.REG_SZ, value)
     _winreg.CloseKey(k)
     return value
@@ -137,7 +149,7 @@ def set_system_environment_variable(name, value):
 
 def set_environment_variable():
     def read_system_environment_variable(name='path'):
-        k = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment')
+        k = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, SYSTEM_ENVIRON)
         value, type_ = _winreg.QueryValueEx(k, name)
         _winreg.CloseKey(k)
         return value
@@ -145,7 +157,9 @@ def set_environment_variable():
     path = read_system_environment_variable()
     path = path.split(';')
 
-    path = filter(lambda a: 'python' not in a.lower() and 'wireshark' not in a.lower(), path)
+    path = filter(
+        lambda a: 'python' not in a.lower() and 'wireshark' not in a.lower(),
+        path)
 
     path.extend(
         [
@@ -167,7 +181,8 @@ def test_everything_is_good():
     #   [] wireshark
 
     print 'Testing the installation:'
-    print '\t[*] {}'.format(fix_width('Python install {}successfully'.format(Fore.GREEN)))
+    print '\t[*] {}'.format(
+        fix_width('Python install {}successfully'.format(Fore.GREEN)))
 
     libraries_paths = (
         os.path.join(INSTALLATION_DIR, 'python.packages'),
@@ -196,7 +211,8 @@ def test_everything_is_good():
                 except ImportError:
                     msg = '{}failed'.format(Fore.RED)
 
-                print '\t[*] Python package - {:15} import {}'.format(library, msg)
+                print '\t[*] Python package - {:15} import {}'.format(library,
+                                                                      msg)
 
     print '{}YAY everything is install! have fun'.format(Fore.LIGHTRED_EX)
     raw_input('Press any key to continue...')
