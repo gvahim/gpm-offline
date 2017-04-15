@@ -196,7 +196,7 @@ def test_everything_is_good():
                 except ImportError:
                     msg = '{}failed'.format(Fore.RED)
 
-                print '\t[*] {}'.format(fix_width('Python {} package install {}'.format(library, msg)))
+                print '\t[*] Python package - {:15} import {}'.format(library, msg)
 
     print '{}YAY everything is install! have fun'.format(Fore.LIGHTRED_EX)
     raw_input('Press any key to continue...')
