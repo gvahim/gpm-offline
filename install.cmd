@@ -8,7 +8,7 @@ set WIRESHARK_DIR=%cd%\wireshark
 
 :InitState
 	cls
-	Title Gvahim Package Installer - v1.1
+	Title Gvahim Package Installer - v1.1 & Color 0A
 	set /a sstage=0
 
 :check_Permissions
@@ -33,7 +33,6 @@ set WIRESHARK_DIR=%cd%\wireshark
     echo installing libraries
     "%PYTHON_DIR%\python.exe" -m pip install --find-links=%INSTALLATION_DIR%\cache --no-index -q colorama
 
-    echo python installer take over
     net session >nul 2>&1
 
 :visualCForPython27
@@ -46,8 +45,10 @@ set WIRESHARK_DIR=%cd%\wireshark
     net session >nul 2>&1
 
 :pythonTakeOver
+    Color 07
     "%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
     set /a sstage+=%errorlevel%
+    Color 0A
 
 :cleanup
     set /a sstage+=1
@@ -59,7 +60,6 @@ set WIRESHARK_DIR=%cd%\wireshark
 
 :Display
 	cls
-	color 0A
 	echo /*------------------------------------------------------------------*\
 	echo ^|                         - [ Stage %~4 ] -
 	echo ^|                   __________________________
@@ -75,6 +75,5 @@ set WIRESHARK_DIR=%cd%\wireshark
 	echo ^|                                                        _\^|/_
 	echo ^|                                                        (o o)
 	echo \*----------------------------------------------------oOO-{_}-OOo---*/
-	color 07
 	PING -n 2 127.0.0.1 > nul
 	goto:eof
