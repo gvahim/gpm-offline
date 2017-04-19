@@ -141,7 +141,8 @@ if __name__ == '__main__':
             os.remove(os.path.join('gvahim_64bit', INSTALLATION_DIR,
                                    'jre-8u121-windows-i586.exe'))
 
-        download_file('get-pip', 'https://bootstrap.pypa.io/get-pip.py', INSTALLATION_DIR)
+        download_file('get-pip', 'https://bootstrap.pypa.io/get-pip.py',
+                      os.path.join(directory, INSTALLATION_DIR))
 
         cache_dir = os.path.join(directory, INSTALLATION_DIR, 'cache')
         software_dir = os.path.join(directory, INSTALLATION_DIR, 'softwares')
