@@ -3,6 +3,8 @@ import pip
 import urllib
 import shutil
 import hashlib
+import zipfile
+import tempfile
 import argparse
 
 from colorama import init, Fore
@@ -13,7 +15,7 @@ INSTALLATION_DIR = 'installation'
 WINRAR = r'C:\Program Files (x86)\WinRAR\rar.exe'
 
 PACKAGES = {
-    'packages': ['colorama', 'pip'],
+    'packages': ['colorama', 'pip', 'setuptools', 'wheel'],
     'requirements': [os.path.join('..', 'python.packages'),
                      os.path.join('..', 'networks.packages')]
 }
@@ -100,6 +102,24 @@ def download_file(name, url, software_dir_):
     return save_path
 
 
+def download_shortcut(path_):
+    tmpdir = None
+    try:
+        tmpdir = tempfile.mkdtemp()
+        url = 'http://www.optimumx.com/download/Shortcut.zip'
+        shortcut_zip = os.path.join(tmpdir, "shortcut.zip")
+        download_file('shortcut', url, tmpdir)
+
+        with zipfile.ZipFile(shortcut_zip) as z:
+            file_path = os.path.join(path_, 'Shortcut.exe')
+            with z.open('Shortcut.exe') as zf, open(file_path, 'wb') as f:
+                shutil.copyfileobj(zf, f)
+    finally:
+        # Clean up our temporary working directory
+        if tmpdir:
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
+
 def create_empty_directory(path_):
     if os.path.exists(path_):
         shutil.rmtree(path_)
@@ -143,6 +163,7 @@ if __name__ == '__main__':
 
         download_file('get-pip', 'https://bootstrap.pypa.io/get-pip.py',
                       os.path.join(directory, INSTALLATION_DIR))
+        download_shortcut(os.path.join(directory, INSTALLATION_DIR))
 
         cache_dir = os.path.join(directory, INSTALLATION_DIR, 'cache')
         software_dir = os.path.join(directory, INSTALLATION_DIR, 'softwares')

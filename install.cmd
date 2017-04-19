@@ -6,6 +6,18 @@ set PYTHON_DIR=%cd%\python27
 set INSTALLATION_DIR=%cd%\installation
 set WIRESHARK_DIR=%cd%\wireshark
 
+if "%1" == "--debug" (
+    set PAUSE_CMD=pause
+    set PYTHON_INSTALLER="%PYTHON_DIR%\python.exe" installation\installer.py %sstage% --debug
+    set DEBUG=true
+) else (
+    set PAUSE_CMD=net session >nul 2>&1
+    set PYTHON_INSTALLER="%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
+    set DEBUG=false
+)
+
+goto:eof
+
 :InitState
 	cls
 	Title Gvahim Package Installer - v1.1 & Color 0A
@@ -15,7 +27,7 @@ set WIRESHARK_DIR=%cd%\wireshark
 	set /a sstage+=1
 	call:Display "Administrative permissions required." "Detecting permissions..." "[i] INFO" %sstage%
 
-    net session >nul 2>&1
+    %PAUSE_CMD%
     if NOT %errorLevel% == 0 (
 		call:Display "Administrative permissions required." "Please Run As Admin" "[e] ERROR !!!" %sstage%
 		goto:eof
@@ -31,11 +43,11 @@ set WIRESHARK_DIR=%cd%\wireshark
     echo [D O N E]
 
     <nul set /p ".=Check if pip install		"
-    "%PYTHON_DIR%\python.exe" -m pip
+    "%PYTHON_DIR%\python.exe" -m pip > nul
     if NOT %errorlevel% == 0 (
         echo [B A D]
         <nul set /p ".=Need to install pip. installing...		"
-        "%PYTHON_DIR%\python.exe" installation\get-pip.py --find-links=%INSTALLATION_DIR%\cache --no-index -q
+        "%PYTHON_DIR%\python.exe" installation\get-pip.py --find-links=%INSTALLATION_DIR%\cache --no-index > nul
         echo [I N S T A L L E D]
     ) else (
         echo [O K]
@@ -47,7 +59,7 @@ set WIRESHARK_DIR=%cd%\wireshark
     echo installing libraries
     "%PYTHON_DIR%\python.exe" -m pip install --find-links=%INSTALLATION_DIR%\cache --no-index -q colorama
 
-    net session >nul 2>&1
+    %PAUSE_CMD%
 
 :visualCForPython27
     set /a sstage+=1
@@ -56,20 +68,22 @@ set WIRESHARK_DIR=%cd%\wireshark
     echo Installing Visual C++ For Python27 - D O N E
 
     echo python installer take over
-    net session >nul 2>&1
+    %PAUSE_CMD%
 
 :pythonTakeOver
     Color 07
-    "%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
+    %PYTHON_INSTALLER%
     set /a sstage+=%errorlevel%
     Color 0A
 
 :cleanup
     set /a sstage+=1
     call:Display "Cleanup Environment" "cleaning up...." "[i] INFO" %sstage%
-    rmdir /S /Q %INSTALLATION_DIR%
-    del install.cmd
-    net session >nul 2>&1
+    if not %DEBUG% (
+        rmdir /S /Q %INSTALLATION_DIR%
+        del install.cmd
+    )
+    %PAUSE_CMD%
     goto:eof
 
 :Display

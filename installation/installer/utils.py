@@ -14,15 +14,10 @@ DESKTOP_DIR = os.path.join(os.path.expanduser('~'), 'Desktop')
 
 def create_shortcut(shortcut_name, path):
     with notifier(shortcut_name, 'Creating shortcut for', dot=False):
-        cmd = 'mklink {link} {target}'.format(link=os.path.join(DESKTOP_DIR, shortcut_name),
-                                              target=path)
+        cmd = '{} /A:C /F:{}\\{}.lnk /T:{}'.format(SHORTCUT, DESKTOP_DIR,
+                                                   shortcut_name, path)
         with open(os.devnull, 'w') as fnull:
             subprocess.call(cmd.split(), stdout=fnull)
-
-        # cmd = '{} /A:C /F:{}\\{}.lnk /T:{}'.format(SHORTCUT, DESKTOP_DIR,
-        #                                            shortcut_name, path)
-        # with open(os.devnull, 'w') as fnull:
-        #     subprocess.call(cmd.split(), stdout=fnull)
 
 
 def is_valid_os():
