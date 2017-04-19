@@ -8,19 +8,15 @@ set WIRESHARK_DIR=%cd%\wireshark
 
 if "%1" == "--debug" (
     set PAUSE_CMD=pause
-    set PYTHON_INSTALLER="%PYTHON_DIR%\python.exe" installation\installer.py %sstage% --debug
     set DEBUG=true
 ) else (
     set PAUSE_CMD=net session >nul 2>&1
-    set PYTHON_INSTALLER="%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
     set DEBUG=false
 )
 
-goto:eof
-
 :InitState
 	cls
-	Title Gvahim Package Installer - v1.1 & Color 0A
+	Title Gvahim Package Installer - v1.2 & Color 0A
 	set /a sstage=0
 
 :check_Permissions
@@ -72,14 +68,18 @@ goto:eof
 
 :pythonTakeOver
     Color 07
-    %PYTHON_INSTALLER%
+    if %DEBUG% == true (
+        "%PYTHON_DIR%\python.exe" installation\installer.py %sstage% --debug
+    ) else (
+        "%PYTHON_DIR%\python.exe" installation\installer.py %sstage%
+    )
     set /a sstage+=%errorlevel%
     Color 0A
 
 :cleanup
     set /a sstage+=1
     call:Display "Cleanup Environment" "cleaning up...." "[i] INFO" %sstage%
-    if not %DEBUG% (
+    if %DEBUG% == false (
         rmdir /S /Q %INSTALLATION_DIR%
         del install.cmd
     )
