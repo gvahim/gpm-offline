@@ -13,7 +13,7 @@ INSTALLATION_DIR = 'installation'
 WINRAR = r'C:\Program Files (x86)\WinRAR\rar.exe'
 
 PACKAGES = {
-    'packages': ['colorama'],
+    'packages': ['colorama', 'pip'],
     'requirements': [os.path.join('..', 'python.packages'),
                      os.path.join('..', 'networks.packages')]
 }

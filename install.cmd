@@ -30,6 +30,20 @@ set WIRESHARK_DIR=%cd%\wireshark
     setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" /M > nul
     echo [D O N E]
 
+    <nul set /p ".=Check if pip install		"
+    "%PYTHON_DIR%\python.exe" -m pip
+    if NOT %errorlevel% == 0 (
+        echo [B A D]
+        <nul set /p ".=Need to install pip. installing...		"
+        "%PYTHON_DIR%\python.exe" installation\get-pip.py --find-links=%INSTALLATION_DIR%\cache --no-index -q
+        echo [I N S T A L L E D]
+    ) else (
+        echo [O K]
+    )
+
+    setx PYTHONPATH "%PYTHON_DIR%;%PYTHON_DIR%\Scripts;" /M > nul
+    echo [D O N E]
+
     echo installing libraries
     "%PYTHON_DIR%\python.exe" -m pip install --find-links=%INSTALLATION_DIR%\cache --no-index -q colorama
 

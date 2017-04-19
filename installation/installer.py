@@ -33,6 +33,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('stage', type=int)
+    parser.add_argument('-d', '--debug', action='store_true')
 
     args = parser.parse_args()
 
@@ -41,7 +42,10 @@ if __name__ == '__main__':
     for i, (step_title, step_subtitle, step_func) in enumerate(STEPS, 1):
         display(stage + i, step_title, step_subtitle, "info")
         step_func()
-        time.sleep(2)
+        if args.debug:
+            raw_input('{}[DEBUG MODE] Press any key to continue...'.format(Fore.LIGHTRED_EX))
+        else:
+            time.sleep(2)
 
     stage += len(STEPS)
     exit(stage)
