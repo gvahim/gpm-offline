@@ -230,7 +230,8 @@ def __fix_scapy_imports():
                 "from scapy.base_classes import Gen, SetGen", os.linesep,
                 "import scapy.plist as plist", os.linesep,
                 "from scapy.utils import PcapReader", os.linesep,
-                "from scapy.data import MTU, ETH_P_ARP", os.linesep,
+                "from scapy.error import Scapy_Exception,log_loading,log_runtime", os.linesep,
+                "from scapy.data import MTU, ETH_P_ARP, ETH_P_ALL, PcapTimeoutElapsed", os.linesep,
                 "import os, re, sys, socket, time, itertools", os.linesep,
                 "WINDOWS = True", os.linesep
             ]
