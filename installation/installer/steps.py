@@ -262,6 +262,7 @@ def install_yore():
     install_package_with_pip('Install yore-socket', os.path.join(CACHE_DIRECTORY, 'yore-socket.zip'))
 
     with notifier('Installing yore change into scapy'):
+        print ''
         path = os.path.join(INSTALLATION_DIR, 'get-scapy-yore.py')
         get_scapy_yore = imp.load_source('get_scapy_yore', path)
         get_scapy_yore.main(True)
