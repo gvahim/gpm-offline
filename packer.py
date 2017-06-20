@@ -181,6 +181,8 @@ if __name__ == '__main__':
                         package = package.strip()
                         pip_download(package)
 
+            download_file('yore-socket', 'https://github.com/gvahim/yore-socket/archive/master.zip', '.')
+
         create_empty_directory(software_dir)
         softwares = [GENERAL_SOFTWARES]
         if args.machine64:
