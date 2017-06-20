@@ -6,7 +6,7 @@ from colorama import init
 from installer.steps import *
 from installer.display import display
 
-INSTALLER_VERSION = '1.2'
+INSTALLER_VERSION = '1.3'
 INSTALLER_TITLE = 'Gvahim Package Installer - v{}'.format(INSTALLER_VERSION)
 
 STEPS = (
