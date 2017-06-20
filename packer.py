@@ -163,6 +163,8 @@ if __name__ == '__main__':
 
         download_file('get-pip', 'https://bootstrap.pypa.io/get-pip.py',
                       os.path.join(directory, INSTALLATION_DIR))
+        download_file('get-scapy-yore', 'https://raw.githubusercontent.com/gvahim/scapy-yore/master/scapy_changes_only/setup.py',
+                      os.path.join(directory, INSTALLATION_DIR))
         download_shortcut(os.path.join(directory, INSTALLATION_DIR))
 
         cache_dir = os.path.join(directory, INSTALLATION_DIR, 'cache')
