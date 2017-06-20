@@ -1,4 +1,5 @@
 import os
+import imp
 import pip
 import shutil
 import _winreg
@@ -75,7 +76,7 @@ def install_pycharm():
     cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'PyCharm.exe'),
                                installation_path)
 
-    with notifier('PyCharm 2017.1.1'):
+    with notifier('PyCharm 2017.1.4'):
         subprocess.call(cmd.split())
 
     exe_name = 'pycharm'
@@ -101,10 +102,14 @@ def install_with_pip(packages_file, notifier_title):
             if package.startswith('#'):
                 continue
             package = package.strip()
-            cmd = 'install --find-links={} --no-index -q {}'.format(
-                CACHE_DIRECTORY, package)
-            with notifier('{} - {}'.format(notifier_title, package)):
-                pip.main(cmd.split())
+            install_package_with_pip(notifier_title, package)
+
+
+def install_package_with_pip(notifier_title, package):
+    cmd = 'install --find-links={} --no-index -q {}'.format(
+        CACHE_DIRECTORY, package)
+    with notifier('{} - {}'.format(notifier_title, package)):
+        pip.main(cmd.split())
 
 
 def install_python_packages():
@@ -116,6 +121,7 @@ def install_networks_packages():
     packages_file = os.path.join(INSTALLATION_DIR, 'networks.packages')
     install_with_pip(packages_file, 'Python Package for Networks')
     __fix_scapy_imports()
+    install_yore()
 
 
 def install_winpcap():
@@ -227,6 +233,7 @@ def __fix_scapy_imports():
 
         with open(file_path, 'r+') as f:
             addition = [
+                "from scapy.error import Scapy_Exception, log_loading, log_runtime", os.linesep,
                 "from scapy.base_classes import Gen, SetGen", os.linesep,
                 "import scapy.plist as plist", os.linesep,
                 "from scapy.utils import PcapReader", os.linesep,
@@ -251,5 +258,14 @@ def __fix_scapy_imports():
             f.writelines(lines)
 
 
+def install_yore():
+    install_package_with_pip('Install yore-socket', 'yore-socket.zip')
+
+    with notifier('Installing yore change into scapy'):
+        path = os.path.join(INSTALLATION_DIR, 'get-scapy-yore.py')
+        get_scapy_yore = imp.load_source('get_scapy_yore', path)
+        get_scapy_yore.main(True)
+
+
 if __name__ == '__main__':
-    set_environment_variable()
+    install_yore()
