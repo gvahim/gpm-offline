@@ -26,7 +26,7 @@ GENERAL_SOFTWARES = {
         'fc4623b113a1f603c0d9ad5f83130bd6de1c62b973be9892305132389c8588de'
     ),
     'PyCharm': (
-        'https://download.jetbrains.com/python/pycharm-community-2017.1.1.exe',
+        'https://download.jetbrains.com/python/pycharm-community-2017.1.4.exe',
         'dc7ea70fa2b34721f939c641294ec68f9ed05355ffbf32bb11d622ddad232861'
     ),
     'VCForPython27': (
