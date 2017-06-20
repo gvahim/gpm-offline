@@ -37,7 +37,7 @@ GENERAL_SOFTWARES = {
 
 SOFTWARES_32BIT = {
     'Wireshark': (
-        'https://1.as.dl.wireshark.org/win32/Wireshark-win32-2.2.6.exee',
+        'https://1.as.dl.wireshark.org/win32/Wireshark-win32-2.2.7.exe',
         'd43a3194d4cb6899bda39fb24e43bbfd8497d6c2794658f69955b7d6a111a796'
     ),
     'python': (
@@ -48,7 +48,7 @@ SOFTWARES_32BIT = {
 
 SOFTWARES_64BIT = {
     'Wireshark': (
-        'https://1.as.dl.wireshark.org/win64/Wireshark-win64-2.2.6.exe',
+        'https://1.as.dl.wireshark.org/win64/Wireshark-win64-2.2.7.exe',
         'faa10fe979440aa231478b8ad35ae5810020f814438e735e6edd57611465c405'
     ),
     'python': (
