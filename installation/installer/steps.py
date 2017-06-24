@@ -5,6 +5,7 @@ import shutil
 import _winreg
 import importlib
 import subprocess
+import scapy_patch
 from colorama import Fore
 from utils import create_shortcut, is_64bit_machine, notifier, heights_path, \
     fix_width, DESKTOP_DIR
@@ -120,7 +121,7 @@ def install_python_packages():
 def install_networks_packages():
     packages_file = os.path.join(INSTALLATION_DIR, 'networks.packages')
     install_with_pip(packages_file, 'Python Package for Networks')
-    __fix_scapy_imports()
+    scapy_patch.patch()
     install_yore()
 
 
@@ -223,39 +224,6 @@ def test_everything_is_good():
 
     print '{}YAY everything is install! have fun'.format(Fore.LIGHTRED_EX)
     raw_input('Press any key to continue...')
-
-
-def __fix_scapy_imports():
-    with notifier('scapy', 'Fixing'):
-        file_path = os.path.join(os.getcwd(), 'python27', 'lib',
-                                 'site-packages', 'scapy', 'arch',
-                                 'windows', 'compatibility.py')
-
-        with open(file_path, 'r+') as f:
-            addition = [
-                "from scapy.error import Scapy_Exception, log_loading, log_runtime", os.linesep,
-                "from scapy.base_classes import Gen, SetGen", os.linesep,
-                "import scapy.plist as plist", os.linesep,
-                "from scapy.utils import PcapReader", os.linesep,
-                "from scapy.data import MTU, ETH_P_ARP", os.linesep,
-                "import os, re, sys, socket, time, itertools", os.linesep,
-                "WINDOWS = True", os.linesep
-            ]
-
-            lines = f.readlines()
-            index = 0
-            found = 0
-            for line in lines:
-                if line.startswith('import') or line.startswith('from'):
-                    found += 1
-                index += 1
-
-                if found == 2:
-                    break
-
-            lines = lines[:index] + addition + lines[index:]
-            f.seek(0, 0)
-            f.writelines(lines)
 
 
 def install_yore():
