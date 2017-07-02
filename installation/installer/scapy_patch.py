@@ -1,5 +1,14 @@
 import os
-from utils import notifier
+try:
+    from utils import notifier
+except ImportError:
+    import contextlib
+    
+    @contextlib.contextmanager
+    def notifier(*args):
+        print ' '.join(args[::-1])
+        yield
+        print 'D O N E'
 
 
 def patch():
