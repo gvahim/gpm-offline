@@ -1,5 +1,4 @@
 import os
-import scapy
 
 try:
     from utils import notifier
@@ -15,6 +14,7 @@ except ImportError:
 
 def patch():
     with notifier('scapy', 'Fixing'):
+        import scapy
         directory, _ = scapy.__file__.rsplit(os.sep, 1)
 
         file_path = os.path.join(directory, 'arch', 'windows', 'compatibility.py')
