@@ -1,4 +1,6 @@
 import os
+import scapy
+
 try:
     from utils import notifier
 except ImportError:
@@ -13,9 +15,11 @@ except ImportError:
 
 def patch():
     with notifier('scapy', 'Fixing'):
-        file_path = os.path.join(os.getcwd(), 'python27', 'lib',
-                                 'site-packages', 'scapy', 'arch',
-                                 'windows', 'compatibility.py')
+        directory, _ = scapy.__file__.rsplit(os.sep, 1)
+
+        file_path = os.path.join(directory, 'arch', 'windows', 'compatibility.py')
+
+        print 'fixing the file', file_path
 
         with open(file_path, 'r+') as f:
             addition = [

@@ -2,6 +2,7 @@ import os
 import imp
 import pip
 import shutil
+import zipfile
 import _winreg
 import importlib
 import subprocess
@@ -134,16 +135,15 @@ def install_winpcap():
 
 def install_wireshark():
     installation_path = os.path.join(os.getcwd(), 'wireshark')
-    cmd = '{} /S /D={}'.format(os.path.join(SOFTWARES_DIR, 'Wireshark.exe'),
-                               installation_path)
+    zip_path = os.path.join(SOFTWARES_DIR, 'wireshark.zip')
 
-    with notifier('Wireshark 2.2.6'):
-        subprocess.call(cmd.split())
+    with notifier('wireshark'), zipfile.ZipFile(zip_path) as f:
+        f.extractall(installation_path)
 
     with notifier('Setting up WIRESHARKPATH environment variable', ''):
         set_system_environment_variable('WIRESHARKPATH', installation_path)
 
-    exe_path = os.path.join(installation_path, 'Wireshark.exe')
+    exe_path = os.path.join(installation_path, 'WiresharkPortable.exe')
     create_shortcut('Wireshark', exe_path)
 
 
