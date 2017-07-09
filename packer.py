@@ -138,6 +138,8 @@ if __name__ == '__main__':
     parser.add_argument('--machine64', action='store_true')
     parser.add_argument('-c', '--check-sum', nargs='+',
                         help='Use this option to calculate check sum')
+    parser.add_argument('-t', '--type', default='all', choices=['pip', 'software', 'all'])
+    parser.add_argument('--no-init', default=False, action='store_true')
 
     args = parser.parse_args()
 
@@ -147,60 +149,58 @@ if __name__ == '__main__':
                                                 calculate_sha256(software))
 
     else:
-        for directory in ('cache', 'softwares'):
-            path = os.path.join(INSTALLATION_DIR, directory)
-            if os.path.exists(path):
-                shutil.rmtree(path)
 
         directory = 'gvahim{}'.format('_64bit' if args.machine64 else '')
-        create_empty_directory(directory)
-        shutil.copyfile('install.cmd', os.path.join(directory, 'install.cmd'))
-        shutil.copytree(INSTALLATION_DIR,
-                        os.path.join(directory, INSTALLATION_DIR))
-        if args.machine64:
-            os.remove(os.path.join('gvahim_64bit', INSTALLATION_DIR,
-                                   'jre-8u121-windows-i586.exe'))
+        if not args.no_init:
+            create_empty_directory(directory)
+            shutil.copyfile('install.cmd', os.path.join(directory, 'install.cmd'))
+            shutil.copytree(INSTALLATION_DIR, os.path.join(directory, INSTALLATION_DIR))
+            if args.machine64:
+                os.remove(os.path.join('gvahim_64bit', INSTALLATION_DIR,
+                                       'jre-8u121-windows-i586.exe'))
 
-        download_file('get-pip', 'https://bootstrap.pypa.io/get-pip.py',
-                      os.path.join(directory, INSTALLATION_DIR))
-        download_file('get-scapy-yore', 'https://raw.githubusercontent.com/gvahim/scapy-yore/master/scapy_changes_only/setup.py',
-                      os.path.join(directory, INSTALLATION_DIR))
-        download_shortcut(os.path.join(directory, INSTALLATION_DIR))
+            download_file('get-pip', 'https://bootstrap.pypa.io/get-pip.py',
+                          os.path.join(directory, INSTALLATION_DIR))
+            download_file('get-scapy-yore',
+                          'https://raw.githubusercontent.com/gvahim/scapy-yore/master/scapy_changes_only/setup.py',
+                          os.path.join(directory, INSTALLATION_DIR))
 
-        cache_dir = os.path.join(directory, INSTALLATION_DIR, 'cache')
-        software_dir = os.path.join(directory, INSTALLATION_DIR, 'softwares')
+        if args.type in ('all', 'pip'):
+            cache_dir = os.path.join(directory, INSTALLATION_DIR, 'cache')
+            create_empty_directory(cache_dir)
+            with change_directory(cache_dir):
+                for package in PACKAGES['packages']:
+                    pip_download(package)
 
-        create_empty_directory(cache_dir)
-        with change_directory(cache_dir):
-            for package in PACKAGES['packages']:
-                pip_download(package)
+                for requirement in PACKAGES['requirements']:
+                    with open(requirement) as file_:
+                        for package in file_:
+                            if package.startswith('#'):
+                                continue
+                            package = package.strip()
+                            pip_download(package)
 
-            for requirement in PACKAGES['requirements']:
-                with open(requirement) as file_:
-                    for package in file_:
-                        if package.startswith('#'):
-                            continue
-                        package = package.strip()
-                        pip_download(package)
+                download_file('yore-socket', 'https://github.com/gvahim/yore-socket/archive/master.zip', '.')
 
-            download_file('yore-socket', 'https://github.com/gvahim/yore-socket/archive/master.zip', '.')
+        elif args.type in ('all', 'software'):
+            software_dir = os.path.join(directory, INSTALLATION_DIR, 'softwares')
 
-        create_empty_directory(software_dir)
-        softwares = [GENERAL_SOFTWARES]
-        if args.machine64:
-            softwares.append(SOFTWARES_64BIT)
-        else:
-            softwares.append(SOFTWARES_32BIT)
+            create_empty_directory(software_dir)
+            softwares = [GENERAL_SOFTWARES]
+            if args.machine64:
+                softwares.append(SOFTWARES_64BIT)
+            else:
+                softwares.append(SOFTWARES_32BIT)
 
-        for software in softwares:
-            for name_, (url_, hash_) in software.iteritems():
-                path = download_file(name_, url_, software_dir)
-                calc_hash = calculate_sha256(path)
-                if hash_ == calc_hash:
-                    color = Fore.GREEN
-                    msg = 'O K'
-                else:
-                    color = Fore.RED
-                    msg = 'E R R O R'
-                msg_ = '{} - Verify download ... '.format(name_)
-                print '{}{}[{}]'.format(fix_width(msg_), color, msg)
+            for software in softwares:
+                for name_, (url_, hash_) in software.iteritems():
+                    path = download_file(name_, url_, software_dir)
+                    calc_hash = calculate_sha256(path)
+                    if hash_ == calc_hash:
+                        color = Fore.GREEN
+                        msg = 'O K'
+                    else:
+                        color = Fore.RED
+                        msg = 'E R R O R'
+                    msg_ = '{} - Verify download ... '.format(name_)
+                    print '{}{}[{}]'.format(fix_width(msg_), color, msg)
